@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temp work scripts
+_*.py
+
+# IDE
+.vscode/
+.cursor/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Stale empty directory (locked by process, safe to delete)
+/control/
