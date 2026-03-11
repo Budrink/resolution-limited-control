@@ -87,7 +87,38 @@ def make_kick_hold(P_kick: float, t_kick: float, P_hold: float, period: float,
     return controller
 
 
-# ---- E) Event-triggered recharge ----
+# ---- E) Event-triggered proportional ----
+def make_event_proportional(W_target: float, K_act: float, P_hold_frac: float,
+                           B_min: float, t_kick: float, refractory: float,
+                           P_max: float) -> Callable:
+    """Event-triggered: when B < B_min, kick with P = clip(K_act*(W_target-W_avg)+P_hold, 0, P_max).
+    During hold, accumulate W for W_avg. State = (in_kick, kick_until, last_kick_end, P_kick, obs_sum, obs_count)."""
+    P_hold = clip_power(P_hold_frac * P_max, P_max)
+
+    def controller(t: float, W: float, B: float, state: Any = None) -> Tuple[float, Any]:
+        if state is None:
+            state = (False, -1e9, -1e9, P_hold, 0.0, 0)
+        in_kick, kick_until, last_kick_end, P_kick, obs_sum, obs_count = state
+        if in_kick and t < kick_until:
+            return P_kick, state
+        if in_kick and t >= kick_until:
+            in_kick = False
+            last_kick_end = t
+            obs_sum = 0.0
+            obs_count = 0
+        if not in_kick:
+            obs_sum += W
+            obs_count += 1
+            if B < B_min and (t - last_kick_end) >= refractory and obs_count > 0:
+                W_avg = obs_sum / obs_count
+                pk = clip_power(K_act * (W_target - W_avg) + P_hold, P_max)
+                return pk, (True, t + t_kick, last_kick_end, pk, 0.0, 0)
+        return P_hold, (in_kick, kick_until, last_kick_end, P_kick, obs_sum, obs_count)
+
+    return controller
+
+
+# ---- F) Event-triggered recharge ----
 def make_event_recharge(P_hold: float, P_kick: float, t_kick: float,
                         B_min: float, refractory: float, P_max: float) -> Callable:
     """If B < B_min and refractory passed, apply kick for t_kick then hold."""

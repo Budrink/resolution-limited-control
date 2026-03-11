@@ -8,6 +8,7 @@ __pycache__/
 
 # Temp work scripts
 _*.py
+fix_notebook.py
 
 # IDE
 .vscode/
