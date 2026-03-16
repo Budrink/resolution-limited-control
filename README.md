@@ -77,6 +77,17 @@ scipy
 Notebooks are self-contained; the plasma model additionally uses the modules
 in `plasma_pulse_opt/src/`.
 
+## About
+
+This repository explores dynamic systems where control effort
+interacts with system structure and degradation.
+
+If you work on simulation, system dynamics or control
+and encounter difficult or unexpected behaviour in models,
+feel free to reach out.
+
+**Konstantin Budrin** — [LinkedIn](https://www.linkedin.com/in/konstantin-b-658845156/) · [kbudrin@gmail.com](mailto:kbudrin@gmail.com)
+
 ## License
 
 MIT
